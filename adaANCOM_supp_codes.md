@@ -1,7 +1,8 @@
-```r
-# Data generation
 
-##-----parameter setting------
+## Data generation
+
+- Parameter setting
+```r
 K <- 30             # the number of the leaf nodes
 theta <- 0.1        # the disperison parameters for DM or DM part of ZIDM
 pi <- 0.1           # the zero-inflation parameters for ZIDM
@@ -9,14 +10,18 @@ beta <- 0.4         # difference between two groups
 N1 <- N2 <- 50      # sample size
 D1 <- round(runif(N1, 10*K, 1000*K))  # the depth 
 D2 <- round(runif(N2, 10*K, 1000*K))
+```
 
-# generate a tree 
+- Generate a tree 
+```r
 library(ape)
 set.seed(K)
 tree <- rtree(K)
 dif_taxa <- 38 # the differential internal nodes
+```
 
-# plot the tree with differential settings
+- Plot the tree with differential settings
+```r
 plot(tree, use.edge.length = F, show.tip.label = F, type = "cladogram", direction='downwards')
 nodelabels(frame = "circle", cex=0.8, bg='grey')
 tiplabels(tip = 1:p, frame = "circle", cex=0.8, bg='grey')
@@ -25,16 +30,19 @@ nodelabels(node = dif_taxa, frame = "circle", cex=1, bg='red')
 dif_otu <- find_descent(tree$edge, dif_taxa)
 (dif_otu <- dif_otu[dif_otu<=p])
 tiplabels(tip = dif_otu , frame = "circle", cex=0.8, bg='yellow')
+```
 
-
-##------simulate the parameters on the tree------
+- simulate the parameters on the tree------
+```r
 library(CountOnTree)
 para <- set_difpara(tree, theta=theta, dif_taxa=dif_taxa, dif_effect=beta, seed=K, list=F)
 head(para)
 a1 <- para$para_A
 a2 <- para$para_B
+```
 
-# simulate count data on the tree
+- Simulate count data on the tree
+```r
 mnt1 <- rmn_tree(tree, N1, D=D1, para = a1)   # multinomial tree
 mnt2 <- rmn_tree(tree, N2, D=D2, para = a2) 
 mnt <- rbind(mnt1$otu, mnt2$otu)
@@ -54,8 +62,10 @@ dtm <- round(dtm/s)
 zidtm <- round(zidtm/s)
 
 group <- c(rep('A', N1), rep('B', N2))
+```
 
-##------Differential analysis of different methods------
+## Differential analysis of different methods
+```r
 dat <- mnt
 # t.test for log relative data (0+0.5)
 rel_dat <- (dat+0.5)/rowSums(dat+0.5)
